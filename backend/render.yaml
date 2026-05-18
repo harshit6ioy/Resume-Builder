@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: resume-builder-backend
+    env: docker
+    region: oregon
+    plan: free
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: APP_NAME
+        value: ResumeBuilder
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        value: https://resume-builder-backend.onrender.com # Change this to your final Render URL
+      - key: FRONTEND_URL
+        value: https://your-vercel-app.vercel.app # Change this to your final Vercel URL
+      - key: DB_CONNECTION
+        value: mongodb
+      - key: DB_URI
+        sync: false # Add your MongoDB Atlas connection string securely in the Render dashboard
+      - key: OPENROUTER_API_KEY
+        sync: false # Add your OpenRouter API key securely in the Render dashboard
