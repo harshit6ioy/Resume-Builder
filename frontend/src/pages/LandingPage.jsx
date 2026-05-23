@@ -7,7 +7,6 @@ const LandingPage = () => {
   const features = [
     { icon: Sparkles, title: 'AI-Powered Builder', desc: 'Generate professional summaries and skill suggestions instantly.' },
     { icon: Target, title: 'ATS Optimized', desc: 'Our templates are proven to pass Applicant Tracking Systems.' },
-    { icon: ShieldCheck, title: 'Recruiter Direct', desc: 'Opt-in to our public database and get headhunted directly.' },
   ];
 
   return (
@@ -47,9 +46,6 @@ const LandingPage = () => {
             <div className="flex justify-center gap-4">
               <Link to="/register" className="px-8 py-3.5 bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-200 text-white dark:text-black rounded-md font-bold text-lg transition-all shadow-sm flex items-center">
                 Create My Resume <ArrowRight className="w-5 h-5 ml-2" />
-              </Link>
-              <Link to="/login" className="px-8 py-3.5 bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-[#333] rounded-md font-bold text-lg hover:bg-slate-50 dark:hover:bg-[#111] transition-all flex items-center">
-                Recruiter Access
               </Link>
             </div>
           </motion.div>

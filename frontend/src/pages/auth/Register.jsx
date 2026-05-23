@@ -3,14 +3,13 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { User, Mail, Lock, Briefcase, Loader2 } from 'lucide-react';
+import { User, Mail, Lock, Loader2 } from 'lucide-react';
 
 const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: '',
-    role: 'user'
+    password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
@@ -24,11 +23,9 @@ const Register = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const data = await register(formData.name, formData.email, formData.password, formData.role);
+      const data = await register(formData.name, formData.email, formData.password, 'user');
       toast.success('Registration successful!');
-      
-      if (data.role === 'recruiter') navigate('/recruiter');
-      else navigate('/dashboard');
+      navigate('/dashboard');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Registration failed');
     } finally {
@@ -97,21 +94,7 @@ const Register = () => {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">I am a...</label>
-            <div className="relative">
-              <Briefcase className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none"
-              >
-                <option value="user">Job Seeker</option>
-                <option value="recruiter">Recruiter</option>
-              </select>
-            </div>
-          </div>
+
 
           <button
             type="submit"

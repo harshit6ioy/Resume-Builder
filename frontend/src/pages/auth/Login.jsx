@@ -19,9 +19,7 @@ const Login = () => {
       const data = await login(email, password);
       toast.success('Logged in successfully!');
       
-      if (data.role === 'admin') navigate('/admin');
-      else if (data.role === 'recruiter') navigate('/recruiter');
-      else navigate('/dashboard');
+      navigate('/dashboard');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed');
     } finally {

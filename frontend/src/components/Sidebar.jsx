@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { 
@@ -22,32 +22,20 @@ import {
 const Sidebar = ({ isOpen, setIsOpen }) => {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    navigate('/');
+    await logout();
+  };
 
   const userLinks = [
-    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Create Resume', path: '/create-resume', icon: FileText },
     { name: 'My Resumes', path: '/my-resumes', icon: Files },
-    { name: 'AI Tools', path: '/dashboard', icon: Wand2 },
     { name: 'Templates', path: '/templates', icon: LayoutTemplate },
-    { name: 'Profile', path: '#', icon: UserCircle },
   ];
 
-  const recruiterLinks = [
-    { name: 'Dashboard', path: '/recruiter', icon: LayoutDashboard },
-    { name: 'Search Resumes', path: '/recruiter/search', icon: Search },
-    { name: 'Contact Requests', path: '#', icon: MessageSquare },
-    { name: 'Profile', path: '#', icon: UserCircle },
-  ];
-
-  const adminLinks = [
-    { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
-    { name: 'Users', path: '#', icon: Users },
-  ];
-
-  let links = [];
-  if (user?.role === 'user') links = userLinks;
-  if (user?.role === 'recruiter') links = recruiterLinks;
-  if (user?.role === 'admin') links = adminLinks;
+  const links = userLinks;
 
   return (
     <>
@@ -102,7 +90,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
           </button>
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="flex items-center w-full px-4 py-2.5 text-sm font-bold tracking-wide text-red-600 dark:text-red-400 rounded-md hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors group"
           >
             <LogOut className="w-4 h-4 mr-3" />

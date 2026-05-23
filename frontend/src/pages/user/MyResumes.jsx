@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Edit2, Trash2, Download, Loader2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import ResumePreview from '../../components/ResumePreview';
 
 const MyResumes = () => {
   const [resumes, setResumes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const fetchResumes = async () => {
     try {
@@ -44,6 +46,13 @@ const MyResumes = () => {
     window.open(`${baseUrl}/resume/download/${id}`, '_blank');
   };
 
+  const handleEdit = (resume) => {
+    // In a full implementation we'd probably have an EditResume page,
+    // but we can pass data to CreateResume if it supports initial state.
+    // Assuming we just navigate to a placeholder or CreateResume for now.
+    toast.error('Edit functionality not fully implemented yet');
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-end">
@@ -75,10 +84,12 @@ const MyResumes = () => {
               transition={{ delay: index * 0.1 }}
               className="glass rounded-2xl overflow-hidden group border border-slate-200 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all"
             >
-              <div className="h-48 bg-slate-100 dark:bg-slate-800 flex items-center justify-center relative overflow-hidden">
-                <FileText className="w-16 h-16 text-slate-300 dark:text-slate-600" />
-                <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity space-x-4 backdrop-blur-sm">
-                  <button className="p-3 bg-white text-slate-900 rounded-full hover:scale-110 transition-transform shadow-xl">
+              <div className="h-64 bg-slate-100 dark:bg-slate-800 flex items-center justify-center relative overflow-hidden group-hover:bg-slate-200 transition-colors">
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 w-[595px] h-[842px] pointer-events-none origin-top" style={{ transform: 'scale(0.25)' }}>
+                  <ResumePreview data={resume} />
+                </div>
+                <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity space-x-4 backdrop-blur-sm z-10">
+                  <button onClick={() => handleEdit(resume)} className="p-3 bg-white text-slate-900 rounded-full hover:scale-110 transition-transform shadow-xl">
                     <Edit2 className="w-5 h-5" />
                   </button>
                   <button onClick={() => handleDownload(resume.id)} className="p-3 bg-blue-600 text-white rounded-full hover:scale-110 transition-transform shadow-xl">

@@ -8,16 +8,9 @@ import { useNavigate } from 'react-router-dom';
 const DEFAULT_TEMPLATES = [
   { id: 't1', name: 'Modern Minimal', industry: 'Technology', layout: 'Minimal', preview_image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=500&q=80', colors: ['#ffffff', '#000000'] },
   { id: 't2', name: 'Corporate Standard', industry: 'Finance', layout: 'Traditional', preview_image: 'https://images.unsplash.com/photo-1586282391129-76a6df230234?w=500&q=80', colors: ['#f8fafc', '#1e293b'] },
-  { id: 't3', name: 'Creative Portfolio', industry: 'Design', layout: 'Two-Column', preview_image: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=500&q=80', colors: ['#fdf4ff', '#701a75'] },
-  { id: 't4', name: 'Executive Suite', industry: 'Management', layout: 'Classic', preview_image: 'https://images.unsplash.com/photo-1586281380117-5a60ae2050cc?w=500&q=80', colors: ['#f1f5f9', '#0f172a'] },
-  { id: 't5', name: 'Tech Innovator', industry: 'Engineering', layout: 'Modern Grid', preview_image: 'https://images.unsplash.com/photo-1626111813639-c17b502446ee?w=500&q=80', colors: ['#f0fdf4', '#166534'] },
-  { id: 't6', name: 'Medical Professional', industry: 'Healthcare', layout: 'Clean', preview_image: 'https://images.unsplash.com/photo-1586282391069-42b7a421bfa9?w=500&q=80', colors: ['#eff6ff', '#1e3a8a'] },
-  { id: 't7', name: 'Startup Hustler', industry: 'Entrepreneurship', layout: 'Bold', preview_image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=500&q=80', colors: ['#fff7ed', '#c2410c'] },
-  { id: 't8', name: 'Data Scientist', industry: 'Analytics', layout: 'Structured', preview_image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&q=80', colors: ['#f5f3ff', '#6d28d9'] },
-  { id: 't9', name: 'Sales Closer', industry: 'Sales', layout: 'Impactful', preview_image: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=500&q=80', colors: ['#ecfeff', '#0e7490'] },
-  { id: 't10', name: 'Legal Counsel', industry: 'Law', layout: 'Formal', preview_image: 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=500&q=80', colors: ['#f9fafb', '#111827'] },
-  { id: 't11', name: 'Academic Scholar', industry: 'Education', layout: 'Detailed', preview_image: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=500&q=80', colors: ['#fefce8', '#a16207'] },
-  { id: 't12', name: 'Hospitality Expert', industry: 'Service', layout: 'Welcoming', preview_image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&q=80', colors: ['#fff1f2', '#be123c'] },
+  { id: 't3', name: 'Executive Suite', industry: 'Management', layout: 'Classic', preview_image: 'https://images.unsplash.com/photo-1586281380117-5a60ae2050cc?w=500&q=80', colors: ['#f1f5f9', '#0f172a'] },
+  { id: 't4', name: 'Startup Hustler', industry: 'Entrepreneurship', layout: 'Bold', preview_image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=500&q=80', colors: ['#fff7ed', '#c2410c'] },
+  { id: 't5', name: 'Creative Portfolio', industry: 'Design', layout: 'Two-Column', preview_image: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=500&q=80', colors: ['#fdf4ff', '#701a75'] },
 ];
 
 const Templates = () => {

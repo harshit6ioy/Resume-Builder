@@ -15,16 +15,14 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
-            'role' => 'nullable'
+            'password' => 'required|min:6'
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role ?? 'user',
-            'is_verified' => false
+            'role' => 'user'
         ]);
 
         $token = "dummy-token";

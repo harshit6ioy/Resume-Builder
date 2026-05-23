@@ -21,8 +21,7 @@ const CreateResume = () => {
     experience: '',
     industry: '',
     summary: '',
-    template: location.state?.selectedTemplate || 'modern',
-    is_public: false
+    template: location.state?.selectedTemplate || 'modern'
   });
 
   const [currentSkill, setCurrentSkill] = useState('');
@@ -239,16 +238,27 @@ const CreateResume = () => {
               <input type="text" name="full_name" value={formData.full_name} onChange={handleChange} className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Industry</label>
-              <input type="text" name="industry" value={formData.industry} onChange={handleChange} className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. Technology" />
-            </div>
-            <div>
               <label className="block text-sm font-medium mb-1">Email</label>
               <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Phone</label>
               <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Industry</label>
+              <input type="text" name="industry" value={formData.industry} onChange={handleChange} className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. Technology" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Template Style</label>
+              <select name="template" value={formData.template} onChange={handleChange} className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="modern">Modern Minimal</option>
+                <option value="corporate">Corporate Standard</option>
+                <option value="creative">Creative Portfolio</option>
+                <option value="executive">Executive Suite</option>
+                <option value="tech">Tech Innovator</option>
+                <option value="startup">Startup Hustler</option>
+              </select>
             </div>
           </div>
         </div>
@@ -347,16 +357,7 @@ const CreateResume = () => {
           </div>
         </div>
 
-        <div className="glass p-6 rounded-xl flex items-center justify-between">
-          <div>
-            <h3 className="font-bold">Public Visibility</h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Allow recruiters to find this resume in searches</p>
-          </div>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" name="is_public" checked={formData.is_public} onChange={handleChange} className="sr-only peer" />
-            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-blue-600"></div>
-          </label>
-        </div>
+
       </div>
 
       {/* Preview Side */}

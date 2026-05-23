@@ -202,17 +202,5 @@ class ResumeController extends Controller
 
     return $pdf->download('resume.pdf');
 }
-// SEARCH PUBLIC RESUMES
-public function searchPublicResumes(Request $request)
-{
-    $skill = $request->skill;
 
-    $resumes = Resume::where('is_public', true)
-
-        ->where('skills', 'like', '%' . $skill . '%')
-
-        ->get();
-
-    return response()->json($resumes);
-}
 }
