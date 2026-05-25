@@ -32,6 +32,14 @@ const TemplateMinimal = ({ data }) => {
               <div className="text-sm whitespace-pre-wrap text-slate-600 leading-relaxed">{data.education}</div>
             </div>
           )}
+          {data.activity_details && (
+            <div>
+              <h3 className="text-sm font-bold uppercase tracking-wider pb-2 mb-4 border-b border-slate-300 text-slate-800">
+                {data.activity_type === 'co_curricular' ? 'Co-curricular' : 'Achievements'}
+              </h3>
+              <div className="text-sm whitespace-pre-wrap text-slate-600 leading-relaxed">{data.activity_details}</div>
+            </div>
+          )}
         </div>
         
         <div className="col-span-2 space-y-8 pl-8 border-l border-slate-200">
@@ -45,6 +53,12 @@ const TemplateMinimal = ({ data }) => {
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wider pb-2 mb-4 border-b border-slate-300 text-slate-800">Experience</h3>
               <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{data.experience}</div>
+            </div>
+          )}
+          {data.projects && (
+            <div>
+              <h3 className="text-sm font-bold uppercase tracking-wider pb-2 mb-4 border-b border-slate-300 text-slate-800">Projects</h3>
+              <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{data.projects}</div>
             </div>
           )}
         </div>

@@ -28,6 +28,12 @@ class Resume extends Model
 
         'experience',
 
+        'projects',
+
+        'activity_type',
+
+        'activity_details',
+
         'summary',
 
         'industry',

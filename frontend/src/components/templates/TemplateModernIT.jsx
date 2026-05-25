@@ -35,6 +35,14 @@ const TemplateModernIT = ({ data }) => {
               <div className="text-xs whitespace-pre-wrap leading-relaxed text-slate-400">{data.education}</div>
             </div>
           )}
+          {data.activity_details && (
+            <div className="mt-8">
+              <h3 className="text-sm font-bold uppercase text-white mb-4 tracking-widest">
+                {data.activity_type === 'co_curricular' ? 'Activities' : 'Achievements'}
+              </h3>
+              <div className="text-xs whitespace-pre-wrap leading-relaxed text-slate-400">{data.activity_details}</div>
+            </div>
+          )}
         </div>
 
         {/* Right Content */}
@@ -58,6 +66,18 @@ const TemplateModernIT = ({ data }) => {
               </h3>
               <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700 relative before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent pl-6 border-l border-slate-200">
                 {data.experience}
+              </div>
+            </div>
+          )}
+
+          {data.projects && (
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 mb-5 flex items-center gap-3">
+                <span className="p-1.5 bg-cyan-100 rounded-lg"><svg className="w-5 h-5 text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg></span>
+                Projects
+              </h3>
+              <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700 pl-6 border-l border-slate-200">
+                {data.projects}
               </div>
             </div>
           )}

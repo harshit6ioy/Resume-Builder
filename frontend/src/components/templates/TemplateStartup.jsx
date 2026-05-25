@@ -44,6 +44,14 @@ const TemplateStartup = ({ data }) => {
                   <div className="text-sm whitespace-pre-wrap text-slate-400 leading-relaxed">{data.education}</div>
                 </div>
               )}
+              {data.activity_details && (
+                <div>
+                  <h3 className="text-sm font-bold uppercase text-emerald-400 mb-4 tracking-widest flex items-center gap-2 pt-4">
+                    <div className="w-4 h-px bg-emerald-400"></div> {data.activity_type === 'co_curricular' ? 'Activities' : 'Wins'}
+                  </h3>
+                  <div className="text-sm whitespace-pre-wrap text-slate-400 leading-relaxed">{data.activity_details}</div>
+                </div>
+              )}
            </div>
 
            <div className="col-span-2 space-y-6 border-l border-slate-800 pl-8">
@@ -53,6 +61,14 @@ const TemplateStartup = ({ data }) => {
                     <div className="w-8 h-px bg-emerald-400"></div> Experience
                   </h3>
                   <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-300">{data.experience}</div>
+                </div>
+              )}
+              {data.projects && (
+                <div>
+                  <h3 className="text-sm font-bold uppercase text-emerald-400 mb-4 tracking-widest flex items-center gap-2">
+                    <div className="w-8 h-px bg-emerald-400"></div> Projects
+                  </h3>
+                  <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-300">{data.projects}</div>
                 </div>
               )}
            </div>

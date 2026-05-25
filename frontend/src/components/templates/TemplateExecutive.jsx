@@ -27,6 +27,12 @@ const TemplateExecutive = ({ data }) => {
                 <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{data.experience}</div>
               </div>
             )}
+            {data.projects && (
+              <div>
+                <h3 className="text-xl font-bold uppercase text-slate-900 mb-4 border-b border-slate-300 pb-2 tracking-widest">Projects</h3>
+                <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{data.projects}</div>
+              </div>
+            )}
           </div>
           
           <div className="col-span-1 space-y-8 pl-6 border-l border-slate-200">
@@ -47,6 +53,14 @@ const TemplateExecutive = ({ data }) => {
                     </span>
                   ))}
                 </div>
+              </div>
+            )}
+            {data.activity_details && (
+              <div>
+                <h3 className="text-xl font-bold uppercase text-slate-900 mb-4 border-b border-slate-300 pb-2 tracking-widest">
+                  {data.activity_type === 'co_curricular' ? 'Co-curricular' : 'Achievements'}
+                </h3>
+                <div className="text-sm whitespace-pre-wrap text-slate-700 leading-relaxed">{data.activity_details}</div>
               </div>
             )}
           </div>

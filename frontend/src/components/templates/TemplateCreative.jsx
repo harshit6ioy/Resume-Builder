@@ -40,6 +40,15 @@ const TemplateCreative = ({ data }) => {
                  <div className="text-sm whitespace-pre-wrap text-slate-700 leading-relaxed">{data.education}</div>
               </div>
             )}
+            {data.projects && (
+              <div>
+                 <h3 className="text-2xl font-bold text-orange-900 mb-4 inline-block relative">
+                   Projects
+                   <div className="absolute bottom-1 left-0 w-full h-3 bg-orange-200 -z-10 transform -rotate-1"></div>
+                 </h3>
+                 <div className="text-sm whitespace-pre-wrap text-slate-700 leading-relaxed">{data.projects}</div>
+              </div>
+            )}
           </div>
           
           <div className="col-span-1 space-y-8">
@@ -56,6 +65,15 @@ const TemplateCreative = ({ data }) => {
                       </span>
                     ))}
                   </div>
+                </div>
+              )}
+             {data.activity_details && (
+                <div>
+                   <h3 className="text-2xl font-bold text-orange-900 mb-4 inline-block relative">
+                     {data.activity_type === 'co_curricular' ? 'Activities' : 'Achievements'}
+                     <div className="absolute bottom-1 left-0 w-full h-3 bg-orange-200 -z-10 transform -rotate-1"></div>
+                   </h3>
+                  <div className="text-sm whitespace-pre-wrap text-slate-700 leading-relaxed">{data.activity_details}</div>
                 </div>
               )}
           </div>

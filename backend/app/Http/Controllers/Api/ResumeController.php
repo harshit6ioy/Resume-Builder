@@ -30,6 +30,12 @@ class ResumeController extends Controller
 
             'experience' => 'nullable|string',
 
+            'projects' => 'nullable|string',
+
+            'activity_type' => 'nullable|in:achievements,co_curricular',
+
+            'activity_details' => 'nullable|string',
+
             'summary' => 'nullable|string',
 
             'industry' => 'nullable|string',
@@ -64,6 +70,12 @@ class ResumeController extends Controller
             'education' => $request->education ?? '',
 
             'experience' => $request->experience ?? '',
+
+            'projects' => $request->projects ?? '',
+
+            'activity_type' => $request->activity_type ?? 'achievements',
+
+            'activity_details' => $request->activity_details ?? '',
 
             'summary' => $request->summary,
 
@@ -141,6 +153,9 @@ class ResumeController extends Controller
             'skills' => 'nullable',
             'education' => 'nullable|string',
             'experience' => 'nullable|string',
+            'projects' => 'nullable|string',
+            'activity_type' => 'nullable|in:achievements,co_curricular',
+            'activity_details' => 'nullable|string',
             'summary' => 'nullable|string',
             'industry' => 'nullable|string',
             'template' => 'sometimes|required',

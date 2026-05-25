@@ -28,6 +28,12 @@ const TemplateCorporate = ({ data }) => {
                 <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{data.experience}</div>
               </div>
             )}
+            {data.projects && (
+              <div>
+                <h3 className="text-lg font-bold uppercase text-blue-800 mb-3 border-b-2 border-slate-200 pb-1">Projects</h3>
+                <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{data.projects}</div>
+              </div>
+            )}
           </div>
           
           <div className="col-span-1 space-y-6 bg-white p-4 rounded-md shadow-sm border border-slate-100 h-fit">
@@ -48,6 +54,14 @@ const TemplateCorporate = ({ data }) => {
               <div className="pt-4">
                 <h3 className="text-md font-bold uppercase text-blue-800 mb-3 border-b border-slate-200 pb-1">Education</h3>
                 <div className="text-sm whitespace-pre-wrap text-slate-600 leading-relaxed">{data.education}</div>
+              </div>
+            )}
+            {data.activity_details && (
+              <div className="pt-4">
+                <h3 className="text-md font-bold uppercase text-blue-800 mb-3 border-b border-slate-200 pb-1">
+                  {data.activity_type === 'co_curricular' ? 'Co-curricular' : 'Achievements'}
+                </h3>
+                <div className="text-sm whitespace-pre-wrap text-slate-600 leading-relaxed">{data.activity_details}</div>
               </div>
             )}
           </div>

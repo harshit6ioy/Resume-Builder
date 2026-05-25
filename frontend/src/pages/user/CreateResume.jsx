@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Wand2, Plus, X, Loader2, Sparkles, CheckCircle, Save, Briefcase, PlusCircle, Check } from 'lucide-react';
+import { Wand2, Plus, X, Loader2, Sparkles, CheckCircle, Save, Briefcase, PlusCircle, Check, Eye, BarChart3 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import ResumePreview from '../../components/ResumePreview';
@@ -28,6 +28,9 @@ const CreateResume = () => {
     skills: toSkillArray(editingResume?.skills),
     education: editingResume?.education || '',
     experience: editingResume?.experience || '',
+    projects: editingResume?.projects || '',
+    activity_type: editingResume?.activity_type || 'achievements',
+    activity_details: editingResume?.activity_details || '',
     industry: editingResume?.industry || '',
     summary: editingResume?.summary || '',
     template: editingResume?.template || location.state?.selectedTemplate || 'modern'
@@ -38,11 +41,33 @@ const CreateResume = () => {
   const [aiSuggestions, setAiSuggestions] = useState(null);
   const [aiProjects, setAiProjects] = useState(null);
   const [atsScore, setAtsScore] = useState(null);
+  const [previewMode, setPreviewMode] = useState('preview');
   const [isSaving, setIsSaving] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+
+  const validatePhone = (phone) => {
+    if (!phone) return '';
+    if (!/^\d+$/.test(phone)) return 'Phone number must contain digits only.';
+    if (phone.length < 7 || phone.length > 15) return 'Phone number must be 7 to 15 digits.';
+    return '';
+  };
 
   const handleChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setFormData({ ...formData, [e.target.name]: value });
+  };
+
+  const handlePhoneChange = (e) => {
+    const rawValue = e.target.value;
+    const digitsOnly = rawValue.replace(/\D/g, '').slice(0, 15);
+    const error = rawValue !== digitsOnly ? 'Phone number must contain digits only.' : '';
+
+    setFormData({ ...formData, phone: digitsOnly });
+    setFormErrors({ ...formErrors, phone: error });
+  };
+
+  const handlePhoneBlur = () => {
+    setFormErrors({ ...formErrors, phone: validatePhone(formData.phone) });
   };
 
   const addSkill = (e) => {
@@ -125,7 +150,9 @@ const CreateResume = () => {
         Summary: ${formData.summary}
         Skills: ${formData.skills.join(', ')}
         Experience: ${formData.experience}
+        Projects: ${formData.projects}
         Education: ${formData.education}
+        ${formData.activity_type === 'co_curricular' ? 'Co-curricular Activities' : 'Achievements'}: ${formData.activity_details}
       `;
       const { data } = await api.post('/ai/review-resume', { resume_text: resumeText });
       // The API returns OpenAI choice structure. Parse it for UI if possible or just display text
@@ -133,6 +160,7 @@ const CreateResume = () => {
         score: 'AI Review Complete',
         details: data.content
       });
+      setPreviewMode('ats');
       toast.success('Resume reviewed successfully!');
     } catch (error) {
       toast.error(error.response?.data?.error || error.response?.data?.message || 'Failed to review resume');
@@ -144,6 +172,12 @@ const CreateResume = () => {
   const saveResume = async () => {
     if(!formData.title || !formData.full_name) {
       toast.error('Please enter a title and full name');
+      return;
+    }
+    const phoneError = validatePhone(formData.phone);
+    if (phoneError) {
+      setFormErrors({ ...formErrors, phone: phoneError });
+      toast.error(phoneError);
       return;
     }
     if (!user?.id && !user?._id) {
@@ -181,7 +215,7 @@ const CreateResume = () => {
     return projects.map((proj, idx) => {
       let title = `Project ${idx + 1}`;
       let desc = proj.trim();
-      const match = proj.match(/^[-*•]?\s*\**([^*:\n]+)\**[:\-]\s*(.*)$/ms);
+      const match = proj.match(/^[-*•]?\s*\**([^*:\n]+)\**[:-]\s*(.*)$/ms);
       if (match) {
         title = match[1].trim();
         desc = match[2].trim();
@@ -199,8 +233,8 @@ const CreateResume = () => {
           <button 
             onClick={(e) => {
               e.preventDefault();
-              setFormData({...formData, experience: formData.experience + (formData.experience ? '\n\n' : '') + `${title}\n${desc.replace(/\*\*/g, '')}`});
-              toast.success('Project added to experience!');
+              setFormData({...formData, projects: formData.projects + (formData.projects ? '\n\n' : '') + `${title}\n${desc.replace(/\*\*/g, '')}`});
+              toast.success('Project added to projects!');
             }}
             className="flex items-center justify-center w-full text-xs bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 py-2 rounded-lg font-bold transition-colors"
           >
@@ -266,7 +300,26 @@ const CreateResume = () => {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Phone</label>
-              <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handlePhoneChange}
+                onBlur={handlePhoneBlur}
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength="15"
+                className={`w-full p-3 bg-white dark:bg-slate-800 border rounded-xl focus:ring-2 outline-none ${
+                  formErrors.phone
+                    ? 'border-red-400 focus:ring-red-500 dark:border-red-500'
+                    : 'border-slate-200 dark:border-slate-700 focus:ring-blue-500'
+                }`}
+                placeholder="Digits only"
+                aria-invalid={Boolean(formErrors.phone)}
+              />
+              {formErrors.phone && (
+                <p className="mt-1 text-xs font-medium text-red-500">{formErrors.phone}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Industry</label>
@@ -351,6 +404,23 @@ const CreateResume = () => {
         <div className="glass p-6 rounded-xl">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold">Experience & Education</h2>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Work Experience</label>
+              <textarea name="experience" value={formData.experience} onChange={handleChange} rows="5" className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none" placeholder="Describe your work experience..."></textarea>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Education</label>
+              <textarea name="education" value={formData.education} onChange={handleChange} rows="3" className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none" placeholder="Your educational background..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div className="glass p-6 rounded-xl">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold">Projects</h2>
             <button onClick={suggestProjects} disabled={isGenerating.projects} className="flex items-center text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-[#1A1A1A] dark:text-slate-300 dark:border dark:border-[#333] hover:bg-slate-200 dark:hover:bg-[#222] px-3 py-1.5 rounded-md transition-colors border border-slate-200">
               {isGenerating.projects ? <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" /> : <Briefcase className="w-3.5 h-3.5 mr-2" />}
               Suggest Projects
@@ -368,16 +438,45 @@ const CreateResume = () => {
             </motion.div>
           )}
 
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Work Experience / Projects</label>
-              <textarea name="experience" value={formData.experience} onChange={handleChange} rows="5" className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none" placeholder="Describe your work experience..."></textarea>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Education</label>
-              <textarea name="education" value={formData.education} onChange={handleChange} rows="3" className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none" placeholder="Your educational background..."></textarea>
+          <textarea name="projects" value={formData.projects} onChange={handleChange} rows="4" className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none" placeholder="Highlight academic, personal, freelance, or portfolio projects..."></textarea>
+        </div>
+
+        <div className="glass p-6 rounded-xl">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
+            <h2 className="text-2xl font-bold">Additional Section</h2>
+            <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-1 dark:border-[#333] dark:bg-[#111]">
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, activity_type: 'achievements' })}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  formData.activity_type === 'achievements'
+                    ? 'bg-slate-900 text-white shadow-sm dark:bg-white dark:text-black'
+                    : 'text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'
+                }`}
+              >
+                Achievements
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, activity_type: 'co_curricular' })}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  formData.activity_type === 'co_curricular'
+                    ? 'bg-slate-900 text-white shadow-sm dark:bg-white dark:text-black'
+                    : 'text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'
+                }`}
+              >
+                Co-curricular
+              </button>
             </div>
           </div>
+          <textarea
+            name="activity_details"
+            value={formData.activity_details}
+            onChange={handleChange}
+            rows="4"
+            className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+            placeholder={formData.activity_type === 'co_curricular' ? 'Add clubs, events, volunteering, sports, or campus activities...' : 'Add awards, certifications, rankings, scholarships, or measurable wins...'}
+          ></textarea>
         </div>
 
 
@@ -385,34 +484,81 @@ const CreateResume = () => {
 
       {/* Preview Side */}
       <div className="flex-1 flex flex-col space-y-4">
-        <div className="glass p-4 rounded-xl flex justify-between items-center">
-          <h3 className="font-bold">Live Preview</h3>
-          <div className="space-x-3 flex">
-            <button onClick={reviewResume} disabled={isGenerating.review} className="px-4 py-2 bg-slate-100 dark:bg-[#1A1A1A] border border-slate-200 dark:border-[#333] text-slate-900 dark:text-slate-100 rounded-md text-sm font-medium hover:bg-slate-200 dark:hover:bg-[#222] transition-colors flex items-center">
-              {isGenerating.review ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
-              ATS Review
-            </button>
-            <button onClick={saveResume} disabled={isSaving} className="px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-black rounded-md text-sm font-medium hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors flex items-center shadow-sm">
-              {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-              {editingResumeId ? 'Update Resume' : 'Save Resume'}
-            </button>
+        <div className="glass p-4 rounded-xl">
+          <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+            <div>
+              <h3 className="font-bold">Resume Workspace</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {previewMode === 'ats' ? 'Review ATS suggestions, then switch modes when you need the resume preview.' : 'See your resume exactly as it updates.'}
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:items-end">
+              <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-1 dark:border-[#333] dark:bg-[#111]">
+                <button
+                  type="button"
+                  onClick={() => setPreviewMode('preview')}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center ${
+                    previewMode === 'preview'
+                      ? 'bg-slate-900 text-white shadow-sm dark:bg-white dark:text-black'
+                      : 'text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'
+                  }`}
+                >
+                  <Eye className="w-4 h-4 mr-2" />
+                  Live Preview
+                </button>
+                {atsScore && (
+                  <button
+                    type="button"
+                    onClick={() => setPreviewMode('ats')}
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center ${
+                      previewMode === 'ats'
+                        ? 'bg-slate-900 text-white shadow-sm dark:bg-white dark:text-black'
+                        : 'text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'
+                    }`}
+                  >
+                    <BarChart3 className="w-4 h-4 mr-2" />
+                    ATS Report
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-3 sm:justify-end">
+                <button
+                  onClick={reviewResume}
+                  disabled={isGenerating.review}
+                  className="px-4 py-2 bg-slate-100 dark:bg-[#1A1A1A] border border-slate-200 dark:border-[#333] text-slate-900 dark:text-slate-100 rounded-md text-sm font-medium hover:bg-slate-200 dark:hover:bg-[#222] transition-colors flex items-center"
+                >
+                  {isGenerating.review ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle className="w-4 h-4 mr-2" />}
+                  ATS Review
+                </button>
+                <button
+                  onClick={saveResume}
+                  disabled={isSaving}
+                  className="px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-black rounded-md text-sm font-medium hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors flex items-center shadow-sm"
+                >
+                  {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                  {editingResumeId ? 'Update Resume' : 'Save Resume'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         
-        {atsScore && (
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="glass p-5 rounded-xl max-h-[400px] overflow-y-auto scrollbar-hide">
-            <h3 className="text-lg font-black mb-1 flex items-center text-slate-900 dark:text-white">
-              <Sparkles className="w-5 h-5 mr-2 text-slate-500" /> ATS Analysis Report
-            </h3>
+        {previewMode === 'ats' && atsScore ? (
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="glass flex-1 p-5 rounded-xl overflow-y-auto scrollbar-hide">
+            <div className="border-b border-slate-200 pb-4 dark:border-[#333]">
+              <h3 className="text-lg font-black flex items-center text-slate-900 dark:text-white">
+                <Sparkles className="w-5 h-5 mr-2 text-slate-500" /> ATS Analysis Report
+              </h3>
+            </div>
             {renderAtsDetails(atsScore.details)}
           </motion.div>
-        )}
-
-        <div className="flex-1 overflow-auto bg-[#F4F4F5] dark:bg-[#000000] p-8 rounded-xl flex justify-center items-start border border-slate-200 dark:border-[#222]">
-          <div className="scale-[0.8] origin-top shadow-md">
-             <ResumePreview data={formData} />
+        ) : (
+          <div className="flex-1 overflow-auto bg-[#F4F4F5] dark:bg-[#000000] p-6 rounded-xl flex justify-center items-start border border-slate-200 dark:border-[#222]">
+            <div className="w-full max-w-[640px] min-w-[520px] origin-top shadow-md">
+              <ResumePreview data={formData} />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
