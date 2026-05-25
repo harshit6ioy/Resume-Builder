@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FileText, Plus, Sparkles, TrendingUp, Loader2 } from 'lucide-react';
+import { FileText, Plus, Sparkles, TrendingUp, Loader2, Home } from 'lucide-react';
 import { motion } from 'framer-motion';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
@@ -32,9 +32,19 @@ const UserDashboard = () => {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold mb-2">Welcome back, {user?.name}! 👋</h1>
-        <p className="text-slate-500 dark:text-slate-400">Here's an overview of your resume building progress.</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-sm font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">Dashboard Page</p>
+          <h1 className="text-3xl font-bold mb-2">Welcome back, {user?.name}!</h1>
+          <p className="text-slate-500 dark:text-slate-400">Here's an overview of your resume building progress.</p>
+        </div>
+        <Link
+          to="/"
+          className="inline-flex items-center justify-center gap-2 rounded-md border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+        >
+          <Home className="w-4 h-4" />
+          Home Page
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

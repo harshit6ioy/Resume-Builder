@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'framer-motion';
@@ -14,6 +14,12 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
+  const passwordHint = 'Use 8+ characters with letters, numbers, and a special character. Example: Resume@2026';
+  const isStrongPassword = (password) =>
+    password.length >= 8 &&
+    /[A-Za-z]/.test(password) &&
+    /\d/.test(password) &&
+    /[^A-Za-z0-9]/.test(password);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,13 +27,19 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isStrongPassword(formData.password)) {
+      toast.error(passwordHint);
+      return;
+    }
     setIsLoading(true);
     try {
-      const data = await register(formData.name, formData.email, formData.password, 'user');
-      toast.success('Registration successful!');
-      navigate('/dashboard');
+      await register(formData.name, formData.email, formData.password, 'user');
+      toast.success('OTP sent to your email');
+      navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Registration failed');
+      const errors = error.response?.data?.errors;
+      const firstError = errors && Object.values(errors)[0]?.[0];
+      toast.error(firstError || error.response?.data?.message || 'Registration failed');
     } finally {
       setIsLoading(false);
     }
@@ -89,9 +101,10 @@ const Register = () => {
                 value={formData.password}
                 onChange={handleChange}
                 className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                placeholder="••••••••"
+                placeholder="Resume@2026"
               />
             </div>
+            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{passwordHint}</p>
           </div>
 
 

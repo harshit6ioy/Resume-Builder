@@ -79,3 +79,32 @@ button {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+.resume-home {
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.045) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.dark .resume-home {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+}
+
+.typewriter-cursor {
+  display: inline-block;
+  width: 0.08em;
+  height: 0.95em;
+  margin-left: 0.12rem;
+  vertical-align: -0.08em;
+  background: currentColor;
+  animation: resume-cursor-blink 0.9s steps(2, start) infinite;
+}
+
+@keyframes resume-cursor-blink {
+  50% {
+    opacity: 0;
+  }
+}

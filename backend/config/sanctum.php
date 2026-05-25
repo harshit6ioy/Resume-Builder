@@ -41,6 +41,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Sanctum Tokens Table
+    |--------------------------------------------------------------------------
+    |
+    | Sanctum stores tokens in a database table. You may change the name of
+    | this table if desired, or you may use a MongoDB collection by prefixing
+    | with 'mongodb_collection:' instead of 'table:'.
+    |
+    */
+
+    'tokens_table' => 'personal_access_tokens',
+
+    /*
+    |--------------------------------------------------------------------------
     | Expiration Minutes
     |--------------------------------------------------------------------------
     |

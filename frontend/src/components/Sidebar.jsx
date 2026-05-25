@@ -9,6 +9,7 @@ import {
   Wand2, 
   LayoutTemplate, 
   UserCircle, 
+  Home,
   LogOut,
   Search,
   MessageSquare,
@@ -30,6 +31,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
   };
 
   const userLinks = [
+    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Create Resume', path: '/create-resume', icon: FileText },
     { name: 'My Resumes', path: '/my-resumes', icon: Files },
     { name: 'Templates', path: '/templates', icon: LayoutTemplate },
@@ -82,6 +84,16 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         </div>
 
         <div className="p-4 space-y-2 border-t border-slate-200 dark:border-[#222]">
+          <button
+            onClick={() => {
+              setIsOpen(false);
+              navigate('/');
+            }}
+            className="flex items-center w-full px-4 py-2.5 text-sm font-bold tracking-wide text-slate-600 dark:text-slate-400 rounded-md hover:bg-slate-50 dark:hover:bg-[#111] transition-colors group"
+          >
+            <Home className="w-4 h-4 mr-3" />
+            Home Page
+          </button>
           <button
             onClick={toggleTheme}
             className="flex items-center w-full px-4 py-2.5 text-sm font-bold tracking-wide text-slate-600 dark:text-slate-400 rounded-md hover:bg-slate-50 dark:hover:bg-[#111] transition-colors group"

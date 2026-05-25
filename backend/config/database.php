@@ -64,14 +64,10 @@ return [
             ]) : [],
         ],
         'mongodb' => [
-
-    'driver' => 'mongodb',
-
-    'dsn' => env('MONGODB_URI'),
-
-    'database' => env('MONGODB_DATABASE'),
-
-],
+            'driver' => 'mongodb',
+            'dsn' => env('MONGODB_URI') ?: 'mongodb://localhost:27017',
+            'database' => env('MONGODB_DATABASE', 'resume_builder'),
+        ],
 
         'mariadb' => [
             'driver' => 'mariadb',
@@ -122,7 +118,6 @@ return [
             // 'encrypt' => env('DB_ENCRYPT', 'yes'),
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
-        
 
     ],
 

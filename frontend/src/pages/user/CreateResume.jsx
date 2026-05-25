@@ -11,17 +11,26 @@ const CreateResume = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const editingResume = location.state?.mode === 'edit' ? location.state.resume : null;
+  const editingResumeId = editingResume?.id || editingResume?._id;
+  const toSkillArray = (skills) => {
+    if (Array.isArray(skills)) return skills;
+    if (typeof skills === 'string') {
+      return skills.split(',').map(skill => skill.trim()).filter(Boolean);
+    }
+    return [];
+  };
   const [formData, setFormData] = useState({
-    title: '',
-    full_name: '',
-    email: '',
-    phone: '',
-    skills: [],
-    education: '',
-    experience: '',
-    industry: '',
-    summary: '',
-    template: location.state?.selectedTemplate || 'modern'
+    title: editingResume?.title || '',
+    full_name: editingResume?.full_name || user?.name || '',
+    email: editingResume?.email || user?.email || '',
+    phone: editingResume?.phone || '',
+    skills: toSkillArray(editingResume?.skills),
+    education: editingResume?.education || '',
+    experience: editingResume?.experience || '',
+    industry: editingResume?.industry || '',
+    summary: editingResume?.summary || '',
+    template: editingResume?.template || location.state?.selectedTemplate || 'modern'
   });
 
   const [currentSkill, setCurrentSkill] = useState('');
@@ -137,17 +146,31 @@ const CreateResume = () => {
       toast.error('Please enter a title and full name');
       return;
     }
+    if (!user?.id && !user?._id) {
+      toast.error('Please sign in again before saving your resume');
+      return;
+    }
     setIsSaving(true);
     try {
-      await api.post('/resume/create', {
+      const payload = {
         ...formData,
-        user_id: user.id,
+        email: formData.email || user.email,
+        user_id: user.id || user._id,
         skills: formData.skills.join(', ') // backend expects string
-      });
-      toast.success('Resume saved successfully!');
+      };
+
+      if (editingResumeId) {
+        await api.put(`/resume/update/${editingResumeId}`, payload);
+        toast.success('Resume updated successfully!');
+      } else {
+        await api.post('/resume/create', payload);
+        toast.success('Resume saved successfully!');
+      }
       navigate('/my-resumes');
     } catch (error) {
-      toast.error('Failed to save resume');
+      const errors = error.response?.data?.errors;
+      const firstError = errors && Object.values(errors)[0]?.[0];
+      toast.error(firstError || error.response?.data?.message || 'Failed to save resume');
     } finally {
       setIsSaving(false);
     }
@@ -227,7 +250,7 @@ const CreateResume = () => {
       {/* Editor Side */}
       <div className="flex-1 overflow-y-auto pr-4 space-y-6 scrollbar-hide">
         <div className="glass p-6 rounded-xl">
-          <h2 className="text-2xl font-bold mb-6">Basic Information</h2>
+          <h2 className="text-2xl font-bold mb-6">{editingResumeId ? 'Edit Resume' : 'Basic Information'}</h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
               <label className="block text-sm font-medium mb-1">Resume Title</label>
@@ -371,7 +394,7 @@ const CreateResume = () => {
             </button>
             <button onClick={saveResume} disabled={isSaving} className="px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-black rounded-md text-sm font-medium hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors flex items-center shadow-sm">
               {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-              Save Resume
+              {editingResumeId ? 'Update Resume' : 'Save Resume'}
             </button>
           </div>
         </div>

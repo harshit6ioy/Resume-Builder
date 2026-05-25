@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, Edit2, Trash2, Download, Loader2 } from 'lucide-react';
+import { Edit2, Trash2, Download, Loader2, Send } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -10,25 +10,36 @@ import ResumePreview from '../../components/ResumePreview';
 const MyResumes = () => {
   const [resumes, setResumes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [sendingId, setSendingId] = useState(null);
   const { user } = useAuth();
+  const userId = user?.id || user?._id;
   const navigate = useNavigate();
 
-  const fetchResumes = async () => {
-    try {
-      const { data } = await api.get('/resumes');
-      // Filter resumes for the current user since getUserResumes isn't in api.php
-      const userResumes = data.filter(r => r.user_id === user.id);
-      setResumes(userResumes);
-    } catch (error) {
-      toast.error('Failed to fetch resumes');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchResumes();
-  }, [user.id]);
+    let isMounted = true;
+
+    const loadResumes = async () => {
+      try {
+        const { data } = await api.get('/resumes');
+        const userResumes = data.filter(r => String(r.user_id) === String(userId));
+        if (isMounted) {
+          setResumes(userResumes);
+        }
+      } catch {
+        toast.error('Failed to fetch resumes');
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadResumes();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userId]);
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this resume?')) return;
@@ -36,7 +47,7 @@ const MyResumes = () => {
       await api.delete(`/resume/delete/${id}`);
       toast.success('Resume deleted successfully');
       setResumes(resumes.filter(r => r.id !== id));
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete resume');
     }
   };
@@ -46,11 +57,25 @@ const MyResumes = () => {
     window.open(`${baseUrl}/resume/download/${id}`, '_blank');
   };
 
+  const handleEmailResume = async (id) => {
+    setSendingId(id);
+    try {
+      const { data } = await api.post(`/resume/email/${id}`);
+      toast.success(data.message || 'Resume sent to your login email');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to send resume');
+    } finally {
+      setSendingId(null);
+    }
+  };
+
   const handleEdit = (resume) => {
-    // In a full implementation we'd probably have an EditResume page,
-    // but we can pass data to CreateResume if it supports initial state.
-    // Assuming we just navigate to a placeholder or CreateResume for now.
-    toast.error('Edit functionality not fully implemented yet');
+    navigate('/create-resume', {
+      state: {
+        mode: 'edit',
+        resume,
+      },
+    });
   };
 
   return (
@@ -95,6 +120,14 @@ const MyResumes = () => {
                   <button onClick={() => handleDownload(resume.id)} className="p-3 bg-blue-600 text-white rounded-full hover:scale-110 transition-transform shadow-xl">
                     <Download className="w-5 h-5" />
                   </button>
+                  <button
+                    onClick={() => handleEmailResume(resume.id)}
+                    disabled={sendingId === resume.id}
+                    title="Email to login email"
+                    className="p-3 bg-emerald-600 text-white rounded-full hover:scale-110 transition-transform shadow-xl disabled:opacity-70 disabled:hover:scale-100"
+                  >
+                    {sendingId === resume.id ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                  </button>
                   <button onClick={() => handleDelete(resume.id)} className="p-3 bg-red-500 text-white rounded-full hover:scale-110 transition-transform shadow-xl">
                     <Trash2 className="w-5 h-5" />
                   </button>
@@ -115,6 +148,23 @@ const MyResumes = () => {
                       Share: /public/resume/{resume.share_link}
                    </p>
                 )}
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => handleDownload(resume.id)}
+                    className="inline-flex items-center justify-center gap-2 rounded-md border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download
+                  </button>
+                  <button
+                    onClick={() => handleEmailResume(resume.id)}
+                    disabled={sendingId === resume.id}
+                    className="inline-flex items-center justify-center gap-2 rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-70 transition-colors"
+                  >
+                    {sendingId === resume.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                    Email Me
+                  </button>
+                </div>
               </div>
             </motion.div>
           ))}

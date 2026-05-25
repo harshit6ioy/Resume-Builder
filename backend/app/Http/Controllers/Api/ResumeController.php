@@ -1,10 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-use Barryvdh\DomPDF\Facade\Pdf;
+
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Resume;
+use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ResumeController extends Controller
 {
@@ -13,53 +16,64 @@ class ResumeController extends Controller
     {
         $request->validate([
 
-            'user_id' => 'required',
-
             'title' => 'required',
 
             'full_name' => 'required',
 
-            'email' => 'required|email',
+            'email' => 'nullable|email',
 
-            'phone' => 'required',
+            'phone' => 'nullable|string',
 
-            'skills' => 'required',
+            'skills' => 'nullable',
 
-            'education' => 'required',
+            'education' => 'nullable|string',
 
-            'experience' => 'required',
+            'experience' => 'nullable|string',
 
-            'industry' => 'required',
+            'summary' => 'nullable|string',
 
-            'template' => 'required'
+            'industry' => 'nullable|string',
+
+            'template' => 'required',
 
         ]);
 
+        $user = $request->user();
+        $ownerId = $user ? (string) $user->id : $request->user_id;
+
+        if (! $ownerId) {
+            return response()->json([
+                'message' => 'Please sign in again before saving your resume.',
+            ], 401);
+        }
+
         $resume = Resume::create([
 
-            'user_id' => $request->user_id,
+            'user_id' => $ownerId,
 
             'title' => $request->title,
 
             'full_name' => $request->full_name,
 
-            'email' => $request->email,
+            'email' => $request->email ?: ($user->email ?? ''),
 
-            'phone' => $request->phone,
+            'phone' => $request->phone ?? '',
 
-            'skills' => $request->skills,
+            'skills' => $request->skills ?? '',
 
-            'education' => $request->education,
+            'education' => $request->education ?? '',
 
-            'experience' => $request->experience,
+            'experience' => $request->experience ?? '',
 
-            'industry' => $request->industry,
+            'summary' => $request->summary,
+
+            'industry' => $request->industry ?? '',
 
             'template' => $request->template,
 
             'is_public' => $request->is_public ?? false,
 
-            'share_link' => uniqid('resume_')
+            'share_link' => uniqid('resume_'),
 
         ]);
 
@@ -67,7 +81,7 @@ class ResumeController extends Controller
 
             'message' => 'Resume Created Successfully',
 
-            'resume' => $resume
+            'resume' => $resume,
 
         ], 201);
     }
@@ -85,11 +99,11 @@ class ResumeController extends Controller
     {
         $resume = Resume::find($id);
 
-        if (!$resume) {
+        if (! $resume) {
 
             return response()->json([
 
-                'message' => 'Resume Not Found'
+                'message' => 'Resume Not Found',
 
             ], 404);
         }
@@ -110,22 +124,36 @@ class ResumeController extends Controller
     {
         $resume = Resume::find($id);
 
-        if (!$resume) {
+        if (! $resume) {
 
             return response()->json([
 
-                'message' => 'Resume Not Found'
+                'message' => 'Resume Not Found',
 
             ], 404);
         }
 
-        $resume->update($request->all());
+        $validated = $request->validate([
+            'title' => 'sometimes|required',
+            'full_name' => 'sometimes|required',
+            'email' => 'nullable|email',
+            'phone' => 'nullable|string',
+            'skills' => 'nullable',
+            'education' => 'nullable|string',
+            'experience' => 'nullable|string',
+            'summary' => 'nullable|string',
+            'industry' => 'nullable|string',
+            'template' => 'sometimes|required',
+            'is_public' => 'nullable|boolean',
+        ]);
+
+        $resume->update($validated);
 
         return response()->json([
 
             'message' => 'Resume Updated Successfully',
 
-            'resume' => $resume
+            'resume' => $resume,
 
         ]);
     }
@@ -135,11 +163,11 @@ class ResumeController extends Controller
     {
         $resume = Resume::find($id);
 
-        if (!$resume) {
+        if (! $resume) {
 
             return response()->json([
 
-                'message' => 'Resume Not Found'
+                'message' => 'Resume Not Found',
 
             ], 404);
         }
@@ -148,7 +176,7 @@ class ResumeController extends Controller
 
         return response()->json([
 
-            'message' => 'Resume Deleted Successfully'
+            'message' => 'Resume Deleted Successfully',
 
         ]);
     }
@@ -168,39 +196,82 @@ class ResumeController extends Controller
 
         )->first();
 
-        if (!$resume) {
+        if (! $resume) {
 
             return response()->json([
 
-                'message' => 'Resume Not Found'
+                'message' => 'Resume Not Found',
 
             ], 404);
         }
 
         return response()->json($resume);
     }
+
     public function downloadResume($id)
-{
-    $resume = Resume::find($id);
+    {
+        $resume = Resume::find($id);
 
-    if (!$resume) {
+        if (! $resume) {
 
-        return response()->json([
+            return response()->json([
 
-            'message' => 'Resume Not Found'
+                'message' => 'Resume Not Found',
 
-        ], 404);
+            ], 404);
+        }
+
+        $pdf = Pdf::loadView(
+
+            'resume.template',
+
+            compact('resume')
+
+        );
+
+        return $pdf->download('resume.pdf');
     }
 
-    $pdf = Pdf::loadView(
+    public function emailResume(Request $request, $id)
+    {
+        $resume = Resume::find($id);
 
-        'resume.template',
+        if (! $resume) {
+            return response()->json([
+                'message' => 'Resume Not Found',
+            ], 404);
+        }
 
-        compact('resume')
+        $owner = User::find($resume->user_id);
 
-    );
+        if (! $owner) {
+            return response()->json([
+                'message' => 'Resume owner account was not found.',
+            ], 404);
+        }
 
-    return $pdf->download('resume.pdf');
-}
+        $pdf = Pdf::loadView(
+            'resume.template',
+            compact('resume')
+        );
 
+        $fileName = preg_replace('/[^A-Za-z0-9_-]+/', '_', $resume->title ?: 'resume').'.pdf';
+        $recipient = $owner->email;
+
+        Mail::send('emails.resume', [
+            'user' => $owner,
+            'resume' => $resume,
+        ], function ($message) use ($recipient, $pdf, $fileName, $resume) {
+            $message->to($recipient)
+                ->subject('Your resume: '.($resume->title ?: 'Resume'))
+                ->attachData($pdf->output(), $fileName, [
+                    'mime' => 'application/pdf',
+                ]);
+        });
+
+        return response()->json([
+            'message' => 'Resume sent to your login email.',
+            'email' => $recipient,
+        ]);
+    }
 }
