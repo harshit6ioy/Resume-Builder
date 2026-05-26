@@ -41,6 +41,9 @@ class ResumeController extends Controller
             'industry' => 'nullable|string',
 
             'template' => 'required',
+            'font_size' => 'nullable|in:default,small,medium,large',
+            'font_style' => 'nullable|in:default,sans,serif,mono',
+            'font_weight' => 'nullable|in:default,light,regular,medium,bold',
 
         ]);
 
@@ -82,6 +85,9 @@ class ResumeController extends Controller
             'industry' => $request->industry ?? '',
 
             'template' => $request->template,
+            'font_size' => $request->font_size ?? 'default',
+            'font_style' => $request->font_style ?? 'default',
+            'font_weight' => $request->font_weight ?? 'default',
 
             'is_public' => $request->is_public ?? false,
 
@@ -159,6 +165,9 @@ class ResumeController extends Controller
             'summary' => 'nullable|string',
             'industry' => 'nullable|string',
             'template' => 'sometimes|required',
+            'font_size' => 'nullable|in:default,small,medium,large',
+            'font_style' => 'nullable|in:default,sans,serif,mono',
+            'font_weight' => 'nullable|in:default,light,regular,medium,bold',
             'is_public' => 'nullable|boolean',
         ]);
 

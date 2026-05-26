@@ -33,7 +33,10 @@ const CreateResume = () => {
     activity_details: editingResume?.activity_details || '',
     industry: editingResume?.industry || '',
     summary: editingResume?.summary || '',
-    template: editingResume?.template || location.state?.selectedTemplate || 'modern'
+    template: editingResume?.template || location.state?.selectedTemplate || 'modern',
+    font_size: editingResume?.font_size || 'default',
+    font_style: editingResume?.font_style || 'default',
+    font_weight: editingResume?.font_weight || 'default'
   });
 
   const [currentSkill, setCurrentSkill] = useState('');
@@ -334,6 +337,34 @@ const CreateResume = () => {
                 <option value="executive">Executive Suite</option>
                 <option value="tech">Tech Innovator</option>
                 <option value="startup">Startup Hustler</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Font Size</label>
+              <select name="font_size" value={formData.font_size} onChange={handleChange} className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="default">Default</option>
+                <option value="small">Small</option>
+                <option value="medium">Medium</option>
+                <option value="large">Large</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Font Style</label>
+              <select name="font_style" value={formData.font_style} onChange={handleChange} className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="default">Default</option>
+                <option value="sans">Modern Sans</option>
+                <option value="serif">Classic Serif</option>
+                <option value="mono">Monospace</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Font Weight</label>
+              <select name="font_weight" value={formData.font_weight} onChange={handleChange} className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="default">Default</option>
+                <option value="light">Light</option>
+                <option value="regular">Regular</option>
+                <option value="medium">Medium</option>
+                <option value="bold">Bold</option>
               </select>
             </div>
           </div>

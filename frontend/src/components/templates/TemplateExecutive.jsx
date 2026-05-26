@@ -1,11 +1,14 @@
 import React from 'react';
+import { getResumeTypography } from './resumeTypography';
 
 const TemplateExecutive = ({ data }) => {
+  const { rootStyle, textStyle } = getResumeTypography(data);
+
   return (
-    <div className="w-full bg-white text-slate-900 h-[842px] border border-slate-200 aspect-[1/1.414] font-serif flex flex-col overflow-hidden shadow-sm">
+    <div className="w-full bg-white text-slate-900 h-[842px] border border-slate-200 aspect-[1/1.414] font-serif flex flex-col overflow-hidden shadow-sm" style={rootStyle}>
       <div className="p-10 pb-6 border-b-4 border-slate-900 text-center">
         <h1 className="text-5xl font-bold mb-3 text-slate-900">{data.full_name || 'Your Name'}</h1>
-        <div className="flex items-center justify-center space-x-4 text-sm text-slate-600 font-sans tracking-wide">
+        <div className="flex items-center justify-center space-x-4 text-sm text-slate-600 font-sans tracking-wide" style={textStyle}>
           {data.email && <span>{data.email}</span>}
           {data.email && data.phone && <span>•</span>}
           {data.phone && <span>{data.phone}</span>}
@@ -15,7 +18,7 @@ const TemplateExecutive = ({ data }) => {
       <div className="p-10 flex-1 space-y-8">
         {data.summary && (
           <div className="text-center max-w-2xl mx-auto">
-            <p className="text-sm leading-relaxed text-slate-700 italic">"{data.summary}"</p>
+            <p className="text-sm leading-relaxed text-slate-700 italic" style={textStyle}>"{data.summary}"</p>
           </div>
         )}
 
@@ -24,13 +27,13 @@ const TemplateExecutive = ({ data }) => {
             {data.experience && (
               <div>
                 <h3 className="text-xl font-bold uppercase text-slate-900 mb-4 border-b border-slate-300 pb-2 tracking-widest">Experience</h3>
-                <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{data.experience}</div>
+                <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" style={textStyle}>{data.experience}</div>
               </div>
             )}
             {data.projects && (
               <div>
                 <h3 className="text-xl font-bold uppercase text-slate-900 mb-4 border-b border-slate-300 pb-2 tracking-widest">Projects</h3>
-                <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700">{data.projects}</div>
+                <div className="text-sm whitespace-pre-wrap leading-relaxed text-slate-700" style={textStyle}>{data.projects}</div>
               </div>
             )}
           </div>
@@ -39,7 +42,7 @@ const TemplateExecutive = ({ data }) => {
              {data.education && (
               <div>
                 <h3 className="text-xl font-bold uppercase text-slate-900 mb-4 border-b border-slate-300 pb-2 tracking-widest">Education</h3>
-                <div className="text-sm whitespace-pre-wrap text-slate-700 leading-relaxed">{data.education}</div>
+                <div className="text-sm whitespace-pre-wrap text-slate-700 leading-relaxed" style={textStyle}>{data.education}</div>
               </div>
             )}
             
@@ -48,7 +51,7 @@ const TemplateExecutive = ({ data }) => {
                 <h3 className="text-xl font-bold uppercase text-slate-900 mb-4 border-b border-slate-300 pb-2 tracking-widest">Expertise</h3>
                 <div className="flex flex-wrap gap-2">
                   {(Array.isArray(data.skills) ? data.skills : (data.skills ? data.skills.split(',') : [])).map((skill, index) => (
-                    <span key={index} className="text-sm bg-slate-100 text-slate-800 px-3 py-1 border border-slate-200">
+                    <span key={index} className="text-sm bg-slate-100 text-slate-800 px-3 py-1 border border-slate-200" style={textStyle}>
                       {skill}
                     </span>
                   ))}
@@ -60,7 +63,7 @@ const TemplateExecutive = ({ data }) => {
                 <h3 className="text-xl font-bold uppercase text-slate-900 mb-4 border-b border-slate-300 pb-2 tracking-widest">
                   {data.activity_type === 'co_curricular' ? 'Co-curricular' : 'Achievements'}
                 </h3>
-                <div className="text-sm whitespace-pre-wrap text-slate-700 leading-relaxed">{data.activity_details}</div>
+                <div className="text-sm whitespace-pre-wrap text-slate-700 leading-relaxed" style={textStyle}>{data.activity_details}</div>
               </div>
             )}
           </div>

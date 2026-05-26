@@ -39,6 +39,9 @@ class Resume extends Model
         'industry',
 
         'template',
+        'font_size',
+        'font_style',
+        'font_weight',
         'is_public',
         'share_link',
 

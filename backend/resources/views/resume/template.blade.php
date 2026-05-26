@@ -23,10 +23,49 @@
         /* Typography */
         .sans { font-family: 'Helvetica', 'Arial', sans-serif; }
         .serif { font-family: 'Georgia', 'Times New Roman', serif; }
+
+        @php
+            $fontFamilies = [
+                'sans' => "'Helvetica', 'Arial', sans-serif",
+                'serif' => "'Georgia', 'Times New Roman', serif",
+                'mono' => "'Courier New', monospace",
+            ];
+            $fontSizes = [
+                'small' => '12px',
+                'medium' => '14px',
+                'large' => '16px',
+            ];
+            $fontWeights = [
+                'light' => '300',
+                'regular' => '400',
+                'medium' => '500',
+                'bold' => '700',
+            ];
+            $selectedFontFamily = $fontFamilies[data_get($resume, 'font_style', 'default')] ?? null;
+            $selectedFontSize = $fontSizes[data_get($resume, 'font_size', 'default')] ?? null;
+            $selectedFontWeight = $fontWeights[data_get($resume, 'font_weight', 'default')] ?? null;
+        @endphp
+
+        @if($selectedFontFamily)
+        body.resume-custom-font,
+        body.resume-custom-font * {
+            font-family: {!! $selectedFontFamily !!} !important;
+        }
+        @endif
+
+        @if($selectedFontSize || $selectedFontWeight)
+        body.resume-custom-text div,
+        body.resume-custom-text span,
+        body.resume-custom-text td,
+        body.resume-custom-text p {
+            @if($selectedFontSize) font-size: {{ $selectedFontSize }} !important; @endif
+            @if($selectedFontWeight) font-weight: {{ $selectedFontWeight }} !important; @endif
+        }
+        @endif
         
     </style>
 </head>
-<body>
+<body class="{{ $selectedFontFamily ? 'resume-custom-font' : '' }} {{ ($selectedFontSize || $selectedFontWeight) ? 'resume-custom-text' : '' }}">
 @php
     $templateStr = strtolower($resume->template ?? 'modern');
     $skillsList = is_array($resume->skills) ? $resume->skills : array_map('trim', explode(',', $resume->skills));
