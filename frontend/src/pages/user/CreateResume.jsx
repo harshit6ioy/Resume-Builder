@@ -34,7 +34,8 @@ const CreateResume = () => {
     industry: editingResume?.industry || '',
     summary: editingResume?.summary || '',
     template: editingResume?.template || location.state?.selectedTemplate || 'modern',
-    font_size: editingResume?.font_size || 'default',
+    font_size: (editingResume?.font_size && !['default', 'small', 'medium', 'large'].includes(editingResume?.font_size)) ? editingResume.font_size : '14',
+    font_sizes: editingResume?.font_sizes || {},
     font_style: editingResume?.font_style || 'default',
     font_weight: editingResume?.font_weight || 'default'
   });
@@ -59,6 +60,50 @@ const CreateResume = () => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setFormData({ ...formData, [e.target.name]: value });
   };
+
+  const handleFontSizeChange = (field, value) => {
+    setFormData({
+      ...formData,
+      font_sizes: {
+        ...formData.font_sizes,
+        [field]: value
+      }
+    });
+  };
+
+  const LabelWithFontSize = ({ label, field }) => (
+    <div className="flex justify-between items-end mb-1">
+      <label className="block text-sm font-medium">{label}</label>
+      <div className="flex items-center space-x-1.5 opacity-60 hover:opacity-100 transition-opacity">
+        <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Size:</span>
+        <input 
+          type="number" 
+          value={formData.font_sizes?.[field] || ''} 
+          onChange={(e) => handleFontSizeChange(field, e.target.value)}
+          placeholder="px"
+          min="8" max="48"
+          className="w-12 px-1 py-0.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded focus:ring-1 focus:ring-blue-500 outline-none text-center"
+        />
+      </div>
+    </div>
+  );
+
+  const HeadingWithFontSize = ({ title, field }) => (
+    <div className="flex justify-between items-center">
+      <h2 className="text-2xl font-bold">{title}</h2>
+      <div className="flex items-center space-x-1.5 opacity-60 hover:opacity-100 transition-opacity ml-4">
+        <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Size:</span>
+        <input 
+          type="number" 
+          value={formData.font_sizes?.[field] || ''} 
+          onChange={(e) => handleFontSizeChange(field, e.target.value)}
+          placeholder="px"
+          min="8" max="48"
+          className="w-12 px-1 py-0.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded focus:ring-1 focus:ring-blue-500 outline-none text-center font-normal"
+        />
+      </div>
+    </div>
+  );
 
   const handlePhoneChange = (e) => {
     const rawValue = e.target.value;
@@ -290,19 +335,19 @@ const CreateResume = () => {
           <h2 className="text-2xl font-bold mb-6">{editingResumeId ? 'Edit Resume' : 'Basic Information'}</h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-sm font-medium mb-1">Resume Title</label>
+              <LabelWithFontSize label="Resume Title" field="title" />
               <input type="text" name="title" value={formData.title} onChange={handleChange} className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. Software Engineer 2024" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Full Name</label>
+              <LabelWithFontSize label="Full Name" field="full_name" />
               <input type="text" name="full_name" value={formData.full_name} onChange={handleChange} className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Email</label>
+              <LabelWithFontSize label="Email" field="email" />
               <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Phone</label>
+              <LabelWithFontSize label="Phone" field="phone" />
               <input
                 type="tel"
                 name="phone"
@@ -325,7 +370,7 @@ const CreateResume = () => {
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Industry</label>
+              <LabelWithFontSize label="Industry" field="industry" />
               <input type="text" name="industry" value={formData.industry} onChange={handleChange} className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. Technology" />
             </div>
             <div>
@@ -339,15 +384,7 @@ const CreateResume = () => {
                 <option value="startup">Startup Hustler</option>
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Font Size</label>
-              <select name="font_size" value={formData.font_size} onChange={handleChange} className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-                <option value="default">Default</option>
-                <option value="small">Small</option>
-                <option value="medium">Medium</option>
-                <option value="large">Large</option>
-              </select>
-            </div>
+
             <div>
               <label className="block text-sm font-medium mb-1">Font Style</label>
               <select name="font_style" value={formData.font_style} onChange={handleChange} className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
@@ -355,6 +392,10 @@ const CreateResume = () => {
                 <option value="sans">Modern Sans</option>
                 <option value="serif">Classic Serif</option>
                 <option value="mono">Monospace</option>
+                <option value="calibri">Calibri</option>
+                <option value="times-new-roman">Times New Roman</option>
+                <option value="arial">Arial</option>
+                <option value="georgia">Georgia</option>
               </select>
             </div>
             <div>
@@ -371,8 +412,10 @@ const CreateResume = () => {
         </div>
 
         <div className="glass p-6 rounded-xl relative">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">Professional Summary</h2>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 w-full">
+            <div className="flex-1 min-w-[250px]">
+              <HeadingWithFontSize title="Professional Summary" field="summary" />
+            </div>
             <button onClick={generateAISummary} disabled={isGenerating.summary} className="flex items-center text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-[#1A1A1A] dark:text-slate-300 dark:border dark:border-[#333] hover:bg-slate-200 dark:hover:bg-[#222] px-3 py-1.5 rounded-md transition-colors border border-slate-200">
               {isGenerating.summary ? <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" /> : <Wand2 className="w-3.5 h-3.5 mr-2" />}
               AI Generate
@@ -382,8 +425,10 @@ const CreateResume = () => {
         </div>
 
         <div className="glass p-6 rounded-xl">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">Skills</h2>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 w-full">
+            <div className="flex-1 min-w-[250px]">
+              <HeadingWithFontSize title="Skills" field="skills" />
+            </div>
             <button onClick={suggestSkills} disabled={isGenerating.skills} className="flex items-center text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-[#1A1A1A] dark:text-slate-300 dark:border dark:border-[#333] hover:bg-slate-200 dark:hover:bg-[#222] px-3 py-1.5 rounded-md transition-colors border border-slate-200">
               {isGenerating.skills ? <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-2" />}
               Suggest Skills
@@ -439,19 +484,21 @@ const CreateResume = () => {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Work Experience</label>
+              <LabelWithFontSize label="Work Experience" field="experience" />
               <textarea name="experience" value={formData.experience} onChange={handleChange} rows="5" className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none" placeholder="Describe your work experience..."></textarea>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Education</label>
+              <LabelWithFontSize label="Education" field="education" />
               <textarea name="education" value={formData.education} onChange={handleChange} rows="3" className="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none" placeholder="Your educational background..."></textarea>
             </div>
           </div>
         </div>
 
         <div className="glass p-6 rounded-xl">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold">Projects</h2>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4 w-full">
+            <div className="flex-1 min-w-[250px]">
+              <HeadingWithFontSize title="Projects" field="projects" />
+            </div>
             <button onClick={suggestProjects} disabled={isGenerating.projects} className="flex items-center text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-[#1A1A1A] dark:text-slate-300 dark:border dark:border-[#333] hover:bg-slate-200 dark:hover:bg-[#222] px-3 py-1.5 rounded-md transition-colors border border-slate-200">
               {isGenerating.projects ? <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" /> : <Briefcase className="w-3.5 h-3.5 mr-2" />}
               Suggest Projects
@@ -473,8 +520,10 @@ const CreateResume = () => {
         </div>
 
         <div className="glass p-6 rounded-xl">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
-            <h2 className="text-2xl font-bold">Additional Section</h2>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4 w-full">
+            <div className="flex-1 min-w-[250px]">
+              <HeadingWithFontSize title="Additional Section" field="activity_details" />
+            </div>
             <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-1 dark:border-[#333] dark:bg-[#111]">
               <button
                 type="button"

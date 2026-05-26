@@ -45,6 +45,12 @@ class Resume extends Model
         'is_public',
         'share_link',
 
+        'font_sizes',
+
+    ];
+
+    protected $casts = [
+        'font_sizes' => 'array',
     ];
 
     // RELATION

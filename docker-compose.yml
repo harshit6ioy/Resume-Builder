@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: resume_builder_backend
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    environment:
+      - APP_NAME="ResumePro"
+      - APP_ENV=production
+      - APP_KEY=${APP_KEY}
+      - APP_DEBUG=false
+      - APP_URL=${APP_URL}
+      - DB_CONNECTION=mongodb
+      - DB_URI=${DB_URI}
+      - DB_DATABASE=${DB_DATABASE}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - PORT=80
+    volumes:
+      - backend_storage:/var/www/html/storage
+      - backend_cache:/var/www/html/bootstrap/cache
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Pass the VITE_API_URL during the Docker build process so React can use it
+        - VITE_API_URL=${VITE_API_URL}
+    container_name: resume_builder_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  backend_storage:
+  backend_cache:

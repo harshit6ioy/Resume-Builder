@@ -33,7 +33,7 @@ class AIController extends Controller
         Experience: {$request->experience}
         ";
 
-        
+
 
         $response = Http::timeout(120)
 
@@ -260,15 +260,15 @@ class AIController extends Controller
         ]);
     }
     // AI ATS REVIEW
-public function reviewResume(Request $request)
-{
-    $request->validate([
+    public function reviewResume(Request $request)
+    {
+        $request->validate([
 
-        'resume_text' => 'required'
+            'resume_text' => 'required'
 
-    ]);
+        ]);
 
-    $prompt = "
+        $prompt = "
     Analyze this resume for ATS optimization.
     CRITICAL: DO NOT include any conversational text.
     
@@ -284,33 +284,33 @@ public function reviewResume(Request $request)
     {$request->resume_text}
     ";
 
-    
 
-    $response = Http::timeout(120)
 
-        ->withHeaders([
+        $response = Http::timeout(120)
 
-            'Authorization' => 'Bearer ' . env('OPENROUTER_API_KEY'),
+            ->withHeaders([
 
-            'HTTP-Referer' => env('APP_URL', 'http://localhost'),
+                'Authorization' => 'Bearer ' . env('OPENROUTER_API_KEY'),
 
-            'X-Title' => 'Resume Builder'
+                'HTTP-Referer' => env('APP_URL', 'http://localhost'),
 
-        ])->post(
+                'X-Title' => 'Resume Builder'
 
-            'https://openrouter.ai/api/v1/chat/completions',
+            ])->post(
 
-            [
+                'https://openrouter.ai/api/v1/chat/completions',
 
-                'model' => env('OPENROUTER_MODEL'),
+                [
 
-                'messages' => [
+                    'model' => env('OPENROUTER_MODEL'),
 
-                    [
+                    'messages' => [
 
-                        'role' => 'system',
+                        [
 
-                        'content' => '
+                            'role' => 'system',
+
+                            'content' => '
 
                         You are an AI Resume ATS Reviewer.
 
@@ -318,30 +318,30 @@ public function reviewResume(Request $request)
 
                         '
 
-                    ],
+                        ],
 
-                    [
+                        [
 
-                        'role' => 'user',
+                            'role' => 'user',
 
-                        'content' => $prompt
+                            'content' => $prompt
+
+                        ]
 
                     ]
 
                 ]
 
-            ]
+            );
 
-        );
+        $data = $response->json();
 
-    $data = $response->json();
+        if (!$response->successful() || isset($data['error'])) {
+            return response()->json(['error' => $data['error']['message'] ?? 'AI API Error'], 500);
+        }
 
-    if (!$response->successful() || isset($data['error'])) {
-        return response()->json(['error' => $data['error']['message'] ?? 'AI API Error'], 500);
+        return response()->json([
+            'content' => $data['choices'][0]['message']['content'] ?? 'No content generated.'
+        ]);
     }
-
-    return response()->json([
-        'content' => $data['choices'][0]['message']['content'] ?? 'No content generated.'
-    ]);
-}
 }

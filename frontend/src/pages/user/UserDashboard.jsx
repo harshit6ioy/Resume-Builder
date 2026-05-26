@@ -58,7 +58,9 @@ const UserDashboard = () => {
           >
             <div>
               <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">{stat.title}</p>
-              <h3 className="text-3xl font-bold">{stat.value}</h3>
+              <h3 className="text-3xl font-bold">
+                {isLoading ? <Loader2 className="w-6 h-6 animate-spin text-slate-400" /> : stat.value}
+              </h3>
             </div>
             <div className={`p-4 rounded-xl ${stat.bg}`}>
               <stat.icon className={`w-8 h-8 ${stat.color}`} />
